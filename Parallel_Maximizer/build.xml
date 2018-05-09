@@ -1,0 +1,76 @@
+<project name="Niranjhani_Vasudevan" default="package_All" basedir=".">
+	<property name="build_dir" value="${basedir}/bin/"/>
+	<property name="src_dir" value="${basedir}/src/"/>
+	<property name="jar_dir" value="${basedir}/jar/"/>
+	<property name="staging_dir" value="${basedir}/staging/"/>
+	<record name="${basedir}/ParallelMaximizer.txt" action="start" append="false"/>
+	<path id = "classpath">
+		<fileset dir="lib" includes="**/*.jar"/>
+	</path>
+	<target name="package_All" depends="compile, jar_partA">
+	
+			
+		<echo message="Main Method of  ParallelMaximizer class"/>
+		<java fork="true" jar="${jar_dir}/${ant.project.name}.jar" classpathref="classpath"/>
+		<echo message="Executing JUnit"/>
+		<antcall target="PartA_Junit"/>
+			
+			<antcall target="jar_partB"/>
+		<java fork="true" jar="${jar_dir}/${ant.project.name}.jar" classpathref="classpath"/>
+			<antcall target="PartB_Junit"/>
+			
+		
+	</target>	
+	<target name="compile" depends="clean" description="Compile the task">
+		<echo message="Compiling PartA."/>
+		<mkdir dir="${staging_dir}"/>
+		<javac srcdir="${src_dir}" destdir="${staging_dir}" classpathref="classpath"/>
+	</target>
+	<target name="clean" description="Clean the task">
+		<delete dir="${staging_dir}"/>
+		<delete dir="${jar_dir}"/>
+		<delete file="${basedir}/logPartA.log"/>
+	</target>
+	<target name="jar_partA" depends="compile">
+		<jar destfile="${jar_dir}/${ant.project.name}.jar" basedir="${staging_dir}">
+			<manifest>
+				<attribute name="Main-Class" value="PartA.ParallelMaximizer"/>
+
+			</manifest>
+		</jar>
+	</target>
+	<target name="jar_partB">
+		<jar destfile="${jar_dir}/${ant.project.name}.jar" basedir="${staging_dir}">
+			<manifest>
+				<attribute name="Main-Class" value="PartB.ParallelMaximizer"/>
+
+			</manifest>
+		</jar>
+	</target>
+	<target name="PartA_Junit">
+		<path id="application" location="${jar_dir}/${ant.project.name}.jar"/>
+		<junit printsummary="yes">
+            <classpath>
+                <path refid="classpath"/>
+                <path refid="application"/>
+            </classpath>            
+            <batchtest fork="yes">
+                <fileset dir="${src_dir}" includes="PartA/*Test.java"/>
+            </batchtest>
+        </junit>
+	</target>	
+	
+	<target name="PartB_Junit">
+		<path id="application" location="${jar_dir}/${ant.project.name}.jar"/>
+		<junit printsummary="yes">
+            <classpath>
+                <path refid="classpath"/>
+                <path refid="application"/>
+            </classpath>            
+            <batchtest fork="yes">
+                <fileset dir="${src_dir}" includes="PartB/*Test.java"/>
+            </batchtest>
+        </junit>
+	</target>	
+	<record name="${basedir}/ParallelMaximizer.txt" action="stop"/>
+</project>

@@ -1,0 +1,36 @@
+<project name="Niranjhani_Vasudevan" default="package_All" basedir=".">
+	<property name="build_dir" value="${basedir}/bin/"/>
+	<property name="src_dir" value="${basedir}/src/"/>
+	<property name="jar_dir" value="${basedir}/jar/"/>
+	<property name="staging_dir" value="${basedir}/staging/"/>
+	<record name="${basedir}/coffeeShopLog.txt" action="start" append="false"/>
+	<path id = "classpath">
+		<fileset dir="lib" includes="**/*.jar"/>
+	</path>
+	<target name="package_All" depends="compile, jar">
+
+		<echo message="Main Method of  Auction Server class"/>
+		<java fork="true" jar="${jar_dir}/${ant.project.name}.jar" classpathref="classpath"/>
+
+	</target>	
+	<target name="compile" depends="clean" description="Compile the task">
+		<echo message="Compiling Simulation."/>
+		<mkdir dir="${staging_dir}"/>
+		<javac srcdir="${src_dir}" destdir="${staging_dir}" classpathref="classpath"/>
+	</target>
+	<target name="clean" description="Clean the task">
+		<delete dir="${staging_dir}"/>
+		<delete dir="${jar_dir}"/>
+		<delete file="${basedir}/logSimulation.log"/>
+	</target>
+	<target name="jar" depends="compile">
+		<jar destfile="${jar_dir}/${ant.project.name}.jar" basedir="${staging_dir}">
+			<manifest>
+				<attribute name="Main-Class" value="com.Simulation"/>
+
+			</manifest>
+		</jar>
+	</target>
+	
+	<record name="${basedir}/coffeeShopLog.txt" action="stop"/>
+</project>
